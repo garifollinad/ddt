@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">DTTapp</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="main_title">DTT REAL ESTATE</string>
+    <string name="about">About</string>
+    <string name="description">Description</string>
+    <string name="location">Location</string>
+    <string name="design_development">Design and Development</string>
+    <string name="by_dtt">by DTT</string>
+    <string name="dtt_link">d-tt.nl</string>
+    <string name="no_result">No results found!</string>
+    <string name="try_another">Perhaps try another search?</string>
+    <string name="search_hint">Search for a home</string>
+    <string name="km">&#160;km</string>
+    <string name="usd_sign">$</string>
+    <string name="about_text">DTT is not your average software development company because besides technical knowledge we also have a solid marketing background. With passion, we work on a perfect mix of technology, strategy, and creativity. DTT was established in 2010, and in a short period we have made significant steps forward; a substantial portfolio, excellent credentials, respectable clients, and most importantly a competent and driven team.We are result oriented in our doing and thinking, and always safeguard the (commercial) goals of our clients. Before we start with the development process, it is important to have a clear image about the goals on the long and short term, the target audience, and the business model. In this crucial phase of the project, DTT is pleased to assist you. Furthermore, we will advise you about promotion, security, distribution, and the business model of your solution. These are important ingredients that are used to transform ideas and wishes into successful projects.
+    </string>
+</resources>
