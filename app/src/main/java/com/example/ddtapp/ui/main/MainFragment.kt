@@ -64,6 +64,7 @@ class MainFragment : Fragment(), Injectable {
         askPermission()
     }
 
+    // Set location data during first launch after requesting permission
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -142,8 +143,11 @@ class MainFragment : Fragment(), Injectable {
             when (result) {
                 is MainViewModel.Result.Houses -> {
                     if (result.housesList.isNotEmpty()) {
-                        houseAdapter.initHouses(result.housesList.sortedBy { it.price })
+                        houseAdapter.initHouses(result.housesList)
                     }
+                }
+                is MainViewModel.Result.HousesFiltered -> {
+                    houseAdapter.filteredHouses(result.housesList)
                 }
                 is MainViewModel.Result.HouseModel -> {
 
@@ -160,7 +164,10 @@ class MainFragment : Fragment(), Injectable {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                houseAdapter.filter.filter(newText)
+                // NOTE: (option 1) This is Database search
+                viewModel.getHousesFiltered(newText!!)
+                // NOTE: (option 2) This is custom search using custom Filter
+               // houseAdapter.filter.filter(newText)
                 return false
             }
         })
@@ -170,6 +177,7 @@ class MainFragment : Fragment(), Injectable {
         recyclerView.adapter = houseAdapter
     }
 
+    // Request location permission during first launch, if granted set location data
     private fun askPermission() {
         val fineLocationGranted = ContextCompat.checkSelfPermission(
             requireContext(),

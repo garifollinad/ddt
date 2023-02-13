@@ -12,7 +12,6 @@
         android:layout_height="80dp"
         android:scaleType="fitXY"
         app:shapeAppearanceOverlay="@style/roundedImageView"
-        android:src="@drawable/search_state_empty"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="15dp"

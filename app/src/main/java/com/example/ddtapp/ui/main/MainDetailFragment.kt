@@ -94,19 +94,21 @@ class MainDetailFragment : Fragment(), Injectable, OnMapReadyCallback {
             when (result) {
                 is MainViewModel.Result.HouseModel -> {
                     modelHouse = result.house
-                    result.house.let { model ->
-                        val latLng = LatLng(model?.latitude?.toDouble()!!, model?.longitude?.toDouble()!!)
+                    result.house?.let { model ->
+                        val latLng = LatLng(model.latitude.toDouble()!!, model.longitude.toDouble()!!)
                         setMap(latLng)
-                        price.text = resources.getString(R.string.usd_sign) + LocationUtils.formatDecimalSeparator(model?.price)
-                        bed.text = model?.bedrooms.toString()
-                        bath.text = model?.bathrooms.toString()
-                        size.text = model?.size.toString()
-                        description.text = model?.description
+                        price.text = resources.getString(R.string.usd_sign) + LocationUtils.formatDecimalSeparator(model.price)
+                        bed.text = model.bedrooms.toString()
+                        bath.text = model.bathrooms.toString()
+                        size.text = model.size.toString()
+                        description.text = model.description
                         Glide.with(this)
-                            .load(BuildConfig.BASE_URL + model?.image)
-                            .placeholder(R.drawable.ic_home)
+                            .load(BuildConfig.BASE_URL + model.image)
                             .into(expandedImage)
                     }
+                }
+                is MainViewModel.Result.HousesFiltered -> {
+
                 }
                 is MainViewModel.Result.Houses -> {
 
@@ -127,6 +129,7 @@ class MainDetailFragment : Fragment(), Injectable, OnMapReadyCallback {
         map.addMarker(MarkerOptions().position(latLng))
         map.uiSettings.isZoomControlsEnabled = true
         map.setOnMapClickListener {
+            //navigation of user from current location to house location using Google maps app
             val url = Uri.parse("google.navigation:q=${it.latitude},${it.longitude}")
             val intent = Intent(Intent.ACTION_VIEW, url)
             startActivity(intent)

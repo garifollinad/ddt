@@ -61,7 +61,22 @@ class MainViewModel @Inject constructor(
         )
     }
 
+    fun getHousesFiltered(filter: String) {
+        addDisposable(
+            houseDaoRepository.getHousesFiltered(filter = filter)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { result ->
+                        state.value = Result.HousesFiltered(housesList = result)
+                    },
+                    { error -> state.value = Result.Error(error = error.message) }
+                )
+        )
+    }
+
     sealed class Result {
+        data class HousesFiltered(val housesList: List<House>) : Result()
         data class HouseModel(val house: House?) : Result()
         data class Houses(val housesList: List<House>) : Result()
         data class Error(val error: String?) : Result()

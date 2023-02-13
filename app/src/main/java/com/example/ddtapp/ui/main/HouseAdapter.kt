@@ -64,7 +64,6 @@ class HouseAdapter (
             location.text = distance + resources.getString(R.string.km)
             Glide.with(this)
                 .load(BuildConfig.BASE_URL + item.image)
-                .placeholder(R.drawable.ic_home)
                 .into(houseImg)
 
             houseItem.setOnClickListener {
@@ -101,6 +100,7 @@ class HouseAdapter (
         override fun performFiltering(constraint: CharSequence?): FilterResults {
             val results = FilterResults()
             if (constraint != null) {
+                //filtering houses based on zip or city
                 initialHouses?.let {
                     val items: List<House>? =
                         initialHouses?.filter {

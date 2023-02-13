@@ -19,10 +19,12 @@ object LocationUtils {
         return 0.0
     }
 
+    // Rounds till one significant value after comma
     fun formatDouble(value: Double): Double {
         return Math.round(value * 10.0) / 10.0
     }
 
+    // formats decimal to have comma after every three digits from end
     fun formatDecimalSeparator(number: Int?): String {
         return number.toString()
             .reversed()
