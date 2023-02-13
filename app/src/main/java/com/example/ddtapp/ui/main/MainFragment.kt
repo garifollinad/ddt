@@ -137,7 +137,7 @@ class MainFragment : Fragment(), Injectable {
     }
 
     private fun setData() {
-        viewModel.getHouses()
+        viewModel.getLocalHouses()
         viewModel.liveData.observe(viewLifecycleOwner, Observer { result ->
             when (result) {
                 is MainViewModel.Result.Houses -> {

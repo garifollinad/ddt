@@ -80,4 +80,10 @@ dependencies {
     ///Maps
     implementation "com.google.android.gms:play-services-maps:18.1.0"
 
+    //Room
+    final roomVersion = "2.5.0"
+    implementation "androidx.room:room-runtime:${roomVersion}"
+    implementation "androidx.room:room-rxjava2:${roomVersion}"
+    kapt "androidx.room:room-compiler:${roomVersion}"
+
 }

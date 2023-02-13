@@ -26,7 +26,7 @@ interface AppComponent : AndroidInjector<DTTapp> {
         fun create(application: Application): AppComponent {
             return DaggerAppComponent.builder()
                 .applicationContext(application.applicationContext)
-                .storageModule(StorageModule())
+                .storageModule(StorageModule(application.applicationContext))
                 .repositoryModule(RepositoryModule())
                 .networkModule(NetworkModule())
                 .build()

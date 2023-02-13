@@ -1,9 +1,13 @@
 package com.example.ddtapp.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
+@Entity
 data class House (
+    @PrimaryKey
     @SerializedName("id") val id : Int,
     @SerializedName("image") val image : String,
     @SerializedName("price") val price : Int,
