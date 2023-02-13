@@ -26,7 +26,7 @@ class MainViewModel @Inject constructor(
                 .subscribe(
                     { result ->
                         houseDaoRepository.insertHouses(result)
-                        state.value = Result.Houses(housesList = result)
+                        getLocalHouses()
                     },
                     { error -> state.value = Result.Error(error = error.message) }
                 )
@@ -40,11 +40,21 @@ class MainViewModel @Inject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { result ->
-                        if (result.isEmpty()) {
-                            getHouses()
-                        } else {
-                            state.value = Result.Houses(housesList = result)
-                        }
+                        state.value = Result.Houses(housesList = result)
+                    },
+                    { error -> state.value = Result.Error(error = error.message) }
+                )
+        )
+    }
+
+    fun getHouseById(id: String) {
+        addDisposable(
+            houseDaoRepository.getHouseById(id = id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { result ->
+                        state.value = Result.HouseModel(house = result)
                     },
                     { error -> state.value = Result.Error(error = error.message) }
                 )
@@ -52,6 +62,7 @@ class MainViewModel @Inject constructor(
     }
 
     sealed class Result {
+        data class HouseModel(val house: House?) : Result()
         data class Houses(val housesList: List<House>) : Result()
         data class Error(val error: String?) : Result()
     }

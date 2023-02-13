@@ -7,6 +7,8 @@ import io.reactivex.Single
 interface HouseDaoRepository {
     fun getHouses(): Single<List<House>>
     fun insertHouses(houses: List<House>)
+
+    fun getHouseById(id: String): Single<House?>
 }
 
 class HouseDaoRepositoryImpl(private val database: Database) :
@@ -17,6 +19,10 @@ class HouseDaoRepositoryImpl(private val database: Database) :
 
     override fun insertHouses(houses: List<House>) {
         database.houseDao().insertHouses(houses)
+    }
+
+    override fun getHouseById(id: String): Single<House?> {
+        return database.houseDao().getHouseById(id)
     }
 
 }

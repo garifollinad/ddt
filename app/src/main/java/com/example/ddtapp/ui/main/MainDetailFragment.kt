@@ -10,6 +10,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.ddtapp.BuildConfig
 import com.example.ddtapp.R
@@ -21,10 +23,12 @@ import com.example.ddtapp.utils.LocationUtils
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import javax.inject.Inject
 
 class MainDetailFragment : Fragment(), Injectable, OnMapReadyCallback {
 
     private var modelHouse: House? = null
+    private var modelId: Int ?= null
     private var distance: String? = ""
     private lateinit var searchToolbar: Toolbar
     private lateinit var mapView: MapView
@@ -39,8 +43,8 @@ class MainDetailFragment : Fragment(), Injectable, OnMapReadyCallback {
 
     override fun setArguments(args: Bundle?) {
         super.setArguments(args)
-        modelHouse = args?.get(Constants.HOUSE_DATA) as House
-        distance = args.getString(Constants.HOUSE_DISTANCE)
+        distance = args?.getString(Constants.HOUSE_DISTANCE)
+        modelId = args?.getInt(Constants.HOUSE_ID)
     }
 
     companion object {
@@ -48,6 +52,13 @@ class MainDetailFragment : Fragment(), Injectable, OnMapReadyCallback {
             MainDetailFragment().apply {
                 arguments = data
             }
+    }
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private val viewModel by lazy {
+        ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -78,24 +89,40 @@ class MainDetailFragment : Fragment(), Injectable, OnMapReadyCallback {
     }
 
     private fun setData() {
-        price.text = resources.getString(R.string.usd_sign) + LocationUtils.formatDecimalSeparator(modelHouse?.price)
-        bed.text = modelHouse?.bedrooms.toString()
-        bath.text = modelHouse?.bathrooms.toString()
-        size.text = modelHouse?.size.toString()
+        viewModel.getHouseById(modelId.toString())
+        viewModel.liveData.observe(viewLifecycleOwner, Observer { result ->
+            when (result) {
+                is MainViewModel.Result.HouseModel -> {
+                    modelHouse = result.house
+                    result.house.let { model ->
+                        val latLng = LatLng(model?.latitude?.toDouble()!!, model?.longitude?.toDouble()!!)
+                        setMap(latLng)
+                        price.text = resources.getString(R.string.usd_sign) + LocationUtils.formatDecimalSeparator(model?.price)
+                        bed.text = model?.bedrooms.toString()
+                        bath.text = model?.bathrooms.toString()
+                        size.text = model?.size.toString()
+                        description.text = model?.description
+                        Glide.with(this)
+                            .load(BuildConfig.BASE_URL + model?.image)
+                            .placeholder(R.drawable.ic_home)
+                            .into(expandedImage)
+                    }
+                }
+                is MainViewModel.Result.Houses -> {
+
+                }
+                is MainViewModel.Result.Error -> {
+
+                }
+            }
+        })
         location.text = distance + resources.getString(R.string.km)
-        description.text = modelHouse?.description
-        Glide.with(this)
-            .load(BuildConfig.BASE_URL + modelHouse?.image)
-            .placeholder(R.drawable.ic_home)
-            .into(expandedImage)
         searchToolbar.setOnClickListener {
             (activity as MenuActivity).onBackPressed()
         }
     }
 
-    override fun onMapReady(googleMap: GoogleMap) {
-        map = googleMap
-        val latLng = LatLng(modelHouse?.latitude?.toDouble()!!, modelHouse?.longitude?.toDouble()!!)
+    private fun setMap(latLng: LatLng) {
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.5f))
         map.addMarker(MarkerOptions().position(latLng))
         map.uiSettings.isZoomControlsEnabled = true
@@ -105,5 +132,9 @@ class MainDetailFragment : Fragment(), Injectable, OnMapReadyCallback {
             startActivity(intent)
         }
         mapView.onResume()
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        map = googleMap
     }
 }

@@ -14,4 +14,7 @@ interface HouseDao {
 
     @Query("select * from house")
     fun getHouses(): Single<List<House>>
+
+    @Query("select * from house WHERE id = :id")
+    fun getHouseById(id: String): Single<House?>
 }

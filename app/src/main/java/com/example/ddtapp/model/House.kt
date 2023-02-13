@@ -3,7 +3,6 @@ package com.example.ddtapp.model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
-import java.io.Serializable
 
 @Entity
 data class House (
@@ -20,4 +19,4 @@ data class House (
     @SerializedName("latitude") val latitude : Int,
     @SerializedName("longitude") val longitude : Int,
     @SerializedName("createdDate") val createdDate : String
-): Serializable
+)

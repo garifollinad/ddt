@@ -111,7 +111,7 @@ class MainFragment : Fragment(), Injectable {
 
     private val onHouseDetailListener: OnHouseDetailListener = object : OnHouseDetailListener {
         override fun onHouseClick(model: House?, distance: String?){
-            val bundle = bundleOf(Constants.HOUSE_DATA to model, Constants.HOUSE_DISTANCE to distance)
+            val bundle = bundleOf(Constants.HOUSE_DISTANCE to distance, Constants.HOUSE_ID to model?.id)
             (requireActivity() as MenuActivity).navigateTo(
                 fragment = MainDetailFragment.newInstance(bundle),
                 tag = Screen.MAIN_DETAIL.name,
@@ -137,13 +137,16 @@ class MainFragment : Fragment(), Injectable {
     }
 
     private fun setData() {
-        viewModel.getLocalHouses()
+        viewModel.getHouses()
         viewModel.liveData.observe(viewLifecycleOwner, Observer { result ->
             when (result) {
                 is MainViewModel.Result.Houses -> {
                     if (result.housesList.isNotEmpty()) {
                         houseAdapter.initHouses(result.housesList.sortedBy { it.price })
                     }
+                }
+                is MainViewModel.Result.HouseModel -> {
+
                 }
                 is MainViewModel.Result.Error -> {
 
