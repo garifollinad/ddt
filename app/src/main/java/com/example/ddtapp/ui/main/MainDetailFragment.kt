@@ -17,6 +17,7 @@ import com.example.ddtapp.di.Injectable
 import com.example.ddtapp.model.House
 import com.example.ddtapp.ui.menu.MenuActivity
 import com.example.ddtapp.utils.Constants
+import com.example.ddtapp.utils.LocationUtils
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -77,7 +78,7 @@ class MainDetailFragment : Fragment(), Injectable, OnMapReadyCallback {
     }
 
     private fun setData() {
-        price.text = resources.getString(R.string.usd_sign) + modelHouse?.price.toString()
+        price.text = resources.getString(R.string.usd_sign) + LocationUtils.formatDecimalSeparator(modelHouse?.price)
         bed.text = modelHouse?.bedrooms.toString()
         bath.text = modelHouse?.bathrooms.toString()
         size.text = modelHouse?.size.toString()

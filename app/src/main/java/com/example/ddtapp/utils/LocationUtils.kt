@@ -22,4 +22,12 @@ object LocationUtils {
     fun formatDouble(value: Double): Double {
         return Math.round(value * 10.0) / 10.0
     }
+
+    fun formatDecimalSeparator(number: Int?): String {
+        return number.toString()
+            .reversed()
+            .chunked(3)
+            .joinToString(",")
+            .reversed()
+    }
 }

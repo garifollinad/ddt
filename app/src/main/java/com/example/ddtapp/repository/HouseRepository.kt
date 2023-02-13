@@ -1,9 +1,7 @@
 package com.example.ddtapp.repository
 
-import android.util.Log
 import com.example.ddtapp.api.Api
 import com.example.ddtapp.model.House
-import com.google.gson.JsonObject
 import io.reactivex.Single
 import javax.inject.Inject
 

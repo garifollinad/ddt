@@ -56,7 +56,7 @@ class HouseAdapter (
             val location: TextView = findViewById(R.id.location)
             val houseImg: ImageView = findViewById(R.id.houseImg)
 
-            price.text = resources.getString(R.string.usd_sign) + item.price.toString()
+            price.text = resources.getString(R.string.usd_sign) + LocationUtils.formatDecimalSeparator(item.price)
             address.text = item.zip +  " " + item?.city
             bed.text = item.bedrooms.toString()
             bath.text = item.bathrooms.toString()

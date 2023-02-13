@@ -59,9 +59,9 @@ class MainFragment : Fragment(), Injectable {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bindViews(view)
-        askPermission()
         setData()
         setAdapter()
+        askPermission()
     }
 
     override fun onRequestPermissionsResult(
