@@ -77,10 +77,12 @@ class MainFragment : Fragment(), Injectable {
                     requireContext(),
                     Manifest.permission.ACCESS_FINE_LOCATION
                 ) == PackageManager.PERMISSION_GRANTED
+
                 val coarseLocationGranted = ContextCompat.checkSelfPermission(
                     requireContext(),
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 ) == PackageManager.PERMISSION_GRANTED
+
                 if (fineLocationGranted && coarseLocationGranted) {
                     fusedLocationClient?.lastLocation?.addOnCompleteListener { result ->
                         val location = result.result
@@ -97,6 +99,7 @@ class MainFragment : Fragment(), Injectable {
         emptyContainer = findViewById(R.id.emptyContainer)
         recyclerView = findViewById(R.id.recyclerView)
         search = findViewById(R.id.search)
+
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL,false)
         recyclerView.layoutManager = layoutManager
         val dividerItemDecoration = DividerItemDecoration(
@@ -107,6 +110,7 @@ class MainFragment : Fragment(), Injectable {
             dividerItemDecoration.setDrawable(drawable)
         }
         recyclerView.addItemDecoration(dividerItemDecoration)
+        //used to get current location of user
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
     }
 
@@ -120,6 +124,7 @@ class MainFragment : Fragment(), Injectable {
             )
         }
 
+        //showing default view if filtered house data is not found
         override fun onFilteredResult(isEmpty: Boolean) {
             if (isEmpty) {
                 recyclerView.visibility = View.GONE
@@ -142,11 +147,13 @@ class MainFragment : Fragment(), Injectable {
         viewModel.liveData.observe(viewLifecycleOwner, Observer { result ->
             when (result) {
                 is MainViewModel.Result.Houses -> {
+                    //setting inital list of houses
                     if (result.housesList.isNotEmpty()) {
                         houseAdapter.initHouses(result.housesList)
                     }
                 }
                 is MainViewModel.Result.HousesFiltered -> {
+                    //setting filtered list of houses using database query
                     houseAdapter.filteredHouses(result.housesList)
                 }
                 is MainViewModel.Result.HouseModel -> {
@@ -164,10 +171,24 @@ class MainFragment : Fragment(), Injectable {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText!!.isNotEmpty()) {
+                    search.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.search_bottom_sheet_rectangle))
+                } else {
+                    search.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.search_question_bg))
+                }
                 // NOTE: (option 1) This is Database search
-                viewModel.getHousesFiltered(newText!!)
+                val searchList = newText.split(" ")
+                if (searchList.size == 3) {
+                    val zip = searchList[0] + " " + searchList[1]
+                    val city = searchList[2]
+                    //searching list of houses based on both zip and city parameters
+                    viewModel.getHousesZipAndCityFiltered(zip, city)
+                } else {
+                    //searching list of houses based on either zip or city parameter
+                    viewModel.getHousesZipOrCityFiltered(newText)
+                }
                 // NOTE: (option 2) This is custom search using custom Filter
-               // houseAdapter.filter.filter(newText)
+                // houseAdapter.filter.filter(newText)
                 return false
             }
         })

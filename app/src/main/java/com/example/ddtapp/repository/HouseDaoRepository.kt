@@ -11,7 +11,9 @@ interface HouseDaoRepository {
 
     fun getHouseById(id: String): Single<House?>
 
-    fun getHousesFiltered(filter: String): Flowable<List<House>>
+    fun getHousesZipAndCityFiltered(zip: String, city: String): Flowable<List<House>>
+
+    fun getHousesZipOrCityFiltered(filter: String): Flowable<List<House>>
 }
 
 class HouseDaoRepositoryImpl(private val database: Database) :
@@ -28,8 +30,11 @@ class HouseDaoRepositoryImpl(private val database: Database) :
         return database.houseDao().getHouseById(id)
     }
 
-    override fun getHousesFiltered(filter: String): Flowable<List<House>> {
-        return database.houseDao().getHousesFiltered(filter)
+    override fun getHousesZipAndCityFiltered(zip: String, city: String): Flowable<List<House>> {
+        return database.houseDao().getHousesZipAndCityFiltered(zip, city)
     }
 
+    override fun getHousesZipOrCityFiltered(filter: String): Flowable<List<House>> {
+        return database.houseDao().getHousesZipOrCityFiltered(filter)
+    }
 }

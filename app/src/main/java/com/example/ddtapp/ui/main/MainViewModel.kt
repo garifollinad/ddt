@@ -61,9 +61,23 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    fun getHousesFiltered(filter: String) {
+    fun getHousesZipAndCityFiltered(zip: String, city: String) {
         addDisposable(
-            houseDaoRepository.getHousesFiltered(filter = filter)
+            houseDaoRepository.getHousesZipAndCityFiltered(zip = zip, city = city)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { result ->
+                        state.value = Result.HousesFiltered(housesList = result)
+                    },
+                    { error -> state.value = Result.Error(error = error.message) }
+                )
+        )
+    }
+
+    fun getHousesZipOrCityFiltered(filter: String) {
+        addDisposable(
+            houseDaoRepository.getHousesZipOrCityFiltered(filter = filter)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

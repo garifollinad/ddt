@@ -22,9 +22,18 @@ interface HouseDao {
     @Query(
         """
         SELECT * FROM house
-        WHERE (zip LIKE '%' || :filter || '%') OR (city LIKE '%' || :filter || '%')
+        WHERE (zip LIKE '%' || :zip || '%') AND (city LIKE '%' || :city || '%')
         ORDER BY price ASC
         """
     )
-    fun getHousesFiltered(filter: String): Flowable<List<House>>
+    fun getHousesZipAndCityFiltered(zip: String, city: String): Flowable<List<House>>
+
+    @Query(
+        """
+        SELECT * FROM house
+        WHERE (zip LIKE '%' || :filter || '%') OR (city LIKE '%' || :filter || '%') 
+        ORDER BY price ASC
+        """
+    )
+    fun getHousesZipOrCityFiltered(filter: String): Flowable<List<House>>
 }

@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.example.ddtapp.BuildConfig
 import com.example.ddtapp.R
 import com.example.ddtapp.model.House
+import com.example.ddtapp.utils.Constants
 import com.example.ddtapp.utils.LocationUtils
 import com.google.android.gms.maps.model.LatLng
 
@@ -27,7 +28,7 @@ class HouseAdapter (
 
     private var listHouses: List<House> = arrayListOf()
     private var initialHouses: List<House> = arrayListOf()
-    private var currentLocation = LatLng(0.0, 0.0)
+    private var currentLocation = LatLng(Constants.DISTANCE_ZERO, Constants.DISTANCE_ZERO)
     private var valueFilter: ValueFilter? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, position: Int): HouseViewHolder {
@@ -44,30 +45,53 @@ class HouseAdapter (
 
     inner class HouseViewHolder(val view: View): RecyclerView.ViewHolder(view) {
 
-        fun bindView(item: House) = with(view) {
-            val houseItem: ConstraintLayout = findViewById(R.id.houseItem)
-            val price: TextView = findViewById(R.id.price)
-            val address: TextView = findViewById(R.id.address)
-            val bed: TextView = findViewById(R.id.bed)
-            val bath: TextView = findViewById(R.id.bath)
-            val size: TextView = findViewById(R.id.size)
-            val location: TextView = findViewById(R.id.location)
-            val houseImg: ImageView = findViewById(R.id.houseImg)
+        private lateinit var houseItem: ConstraintLayout
+        private lateinit var price: TextView
+        private lateinit var address: TextView
+        private lateinit var bed: TextView
+        private lateinit var bath: TextView
+        private lateinit var size: TextView
+        private lateinit var location: TextView
+        private lateinit var houseImg: ImageView
 
-            price.text = resources.getString(R.string.usd_sign) + LocationUtils.formatDecimalSeparator(item.price)
-            address.text = item.zip +  " " + item?.city
+        fun bindView(item: House) = with(view) {
+            houseItem = findViewById(R.id.houseItem)
+            price = findViewById(R.id.price)
+            address = findViewById(R.id.address)
+            bed = findViewById(R.id.bed)
+            bath = findViewById(R.id.bath)
+            size = findViewById(R.id.size)
+            location = findViewById(R.id.location)
+            houseImg = findViewById(R.id.houseImg)
+            setData(item)
+        }
+
+        private fun setData(item: House) {
+            val priceText = view.resources.getString(R.string.usd_sign) + LocationUtils.formatDecimalSeparator(item.price)
+            val addressText = item.zip + " " + item.city
+            val houseLocation = LatLng(item.latitude.toDouble(), item.longitude.toDouble())
+            val distance = LocationUtils.calculateDistance(currentLocation, houseLocation)
+
+            if (distance == Constants.DISTANCE_ZERO) {
+                location.visibility = View.GONE
+            } else {
+                val locationText = distance.toString() + view.resources.getString(R.string.km)
+                location.visibility = View.VISIBLE
+                location.text = locationText
+            }
+
+            price.text = priceText
+            address.text = addressText
             bed.text = item.bedrooms.toString()
             bath.text = item.bathrooms.toString()
             size.text = item.size.toString()
-            val houseLocation = LatLng(item.latitude.toDouble(), item.longitude.toDouble())
-            val distance = LocationUtils.calculateDistance(currentLocation, houseLocation).toString()
-            location.text = distance + resources.getString(R.string.km)
-            Glide.with(this)
+
+            Glide.with(view)
                 .load(BuildConfig.BASE_URL + item.image)
                 .into(houseImg)
 
             houseItem.setOnClickListener {
-                onHouseDetailListener.onHouseClick(item, distance)
+                onHouseDetailListener.onHouseClick(item, distance.toString())
             }
         }
     }
@@ -101,11 +125,12 @@ class HouseAdapter (
             val results = FilterResults()
             if (constraint != null) {
                 //filtering houses based on zip or city
-                initialHouses?.let {
-                    val items: List<House>? =
-                        initialHouses?.filter {
-                            it.zip.contains(constraint.toString(), true)
-                                    || it.city.contains(constraint.toString(), true)
+                val filterText = constraint.toString()
+                initialHouses.let {
+                    val items: List<House> =
+                        initialHouses.filter {
+                            it.zip.contains(filterText, true)
+                                    || it.city.contains(filterText, true)
                         }
                     results.values = items
                 }

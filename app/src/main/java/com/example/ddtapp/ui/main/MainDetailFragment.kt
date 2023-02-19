@@ -3,6 +3,7 @@ package com.example.ddtapp.ui.main
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,7 +28,6 @@ import javax.inject.Inject
 
 class MainDetailFragment : Fragment(), Injectable, OnMapReadyCallback {
 
-    private var modelHouse: House? = null
     private var modelId: Int ?= null
     private var distance: String? = ""
     private lateinit var searchToolbar: Toolbar
@@ -89,23 +89,12 @@ class MainDetailFragment : Fragment(), Injectable, OnMapReadyCallback {
     }
 
     private fun setData() {
+        //getting single house data from database using house model ID
         viewModel.getHouseById(modelId.toString())
         viewModel.liveData.observe(viewLifecycleOwner, Observer { result ->
             when (result) {
                 is MainViewModel.Result.HouseModel -> {
-                    modelHouse = result.house
-                    result.house?.let { model ->
-                        val latLng = LatLng(model.latitude.toDouble()!!, model.longitude.toDouble()!!)
-                        setMap(latLng)
-                        price.text = resources.getString(R.string.usd_sign) + LocationUtils.formatDecimalSeparator(model.price)
-                        bed.text = model.bedrooms.toString()
-                        bath.text = model.bathrooms.toString()
-                        size.text = model.size.toString()
-                        description.text = model.description
-                        Glide.with(this)
-                            .load(BuildConfig.BASE_URL + model.image)
-                            .into(expandedImage)
-                    }
+                    setModelData(result.house)
                 }
                 is MainViewModel.Result.HousesFiltered -> {
 
@@ -118,16 +107,35 @@ class MainDetailFragment : Fragment(), Injectable, OnMapReadyCallback {
                 }
             }
         })
-        location.text = distance + resources.getString(R.string.km)
+    }
+
+    private fun setModelData(model: House?) {
+        val latLng = LatLng(model?.latitude!!.toDouble(), model.longitude.toDouble())
+        val priceText = resources.getString(R.string.usd_sign) + LocationUtils.formatDecimalSeparator(model.price)
+        val locationText = distance + resources.getString(R.string.km)
+
+        price.text = priceText
+        bed.text = model.bedrooms.toString()
+        bath.text = model.bathrooms.toString()
+        size.text = model.size.toString()
+        description.text = model.description
+        location.text = locationText
+        Glide.with(this)
+            .load(BuildConfig.BASE_URL + model.image)
+            .into(expandedImage)
+
+        setMap(latLng)
         searchToolbar.setOnClickListener {
             (activity as MenuActivity).onBackPressed()
         }
     }
 
+    //configuring Google Maps, adding marker, setting camera position
     private fun setMap(latLng: LatLng) {
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.5f))
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, Constants.ZOOM))
         map.addMarker(MarkerOptions().position(latLng))
         map.uiSettings.isZoomControlsEnabled = true
+        map.uiSettings.isMapToolbarEnabled = false
         map.setOnMapClickListener {
             //navigation of user from current location to house location using Google maps app
             val url = Uri.parse("google.navigation:q=${it.latitude},${it.longitude}")

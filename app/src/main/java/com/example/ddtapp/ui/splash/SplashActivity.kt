@@ -5,14 +5,15 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import com.example.ddtapp.ui.menu.MenuActivity
+import com.example.ddtapp.utils.Constants
 
 class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Handler().postDelayed(Runnable {
+        Handler().postDelayed({
             val i = Intent(this, MenuActivity::class.java)
             startActivity(i)
             finish()
-        }, 2000)
+        }, Constants.DELAY_MILLIS)
     }
 }

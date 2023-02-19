@@ -20,6 +20,7 @@ class MenuActivity : DaggerAppCompatActivity() {
         }
     }
 
+    //navigation to screens
     fun navigateTo(
         fragment: Fragment,
         tag: String,

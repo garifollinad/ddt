@@ -2,6 +2,7 @@ package com.example.ddtapp.di
 
 import com.example.ddtapp.BuildConfig
 import com.example.ddtapp.api.Api
+import com.example.ddtapp.utils.Constants
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -44,9 +45,9 @@ class NetworkModule {
     ): OkHttpClient.Builder {
         val builder = OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
-            .writeTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
-            .connectTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(Constants.TIMEOUT_60, TimeUnit.SECONDS)
+            .readTimeout(Constants.TIMEOUT_60, TimeUnit.SECONDS)
+            .connectTimeout(Constants.TIMEOUT_60, TimeUnit.SECONDS)
             .retryOnConnectionFailure(true)
             .connectionSpecs(Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.CLEARTEXT))
         return builder
